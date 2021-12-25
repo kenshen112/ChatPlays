@@ -9,10 +9,16 @@ void PineClient::StartPineThread()
 // 00205028 - FinderInSet
 void PineClient::OpenViewFinder()
 {
-	//pcsx2.Write(0x00205028, 1);
+	emulator->Write(0x00205028, 1);
 }
 
 void PineClient::CloseViewFinder()
+{
+
+}
+
+// Parse commands from thread in here and execute functions
+void PineClient::Run()
 {
 
 }

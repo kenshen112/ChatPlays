@@ -11,6 +11,8 @@
 #include "Windows/control.h"
 #endif
 
+using namespace PINE;
+
 // ToDo: Write your own implementation of PINE for whatever game or emulator software you're using
 class PineClient
 {
@@ -21,12 +23,12 @@ private:
 		std::make_pair("ViewfinderClose", &CloseViewFinder)
 	};
 
-	PINE::PCSX2 pcsx2;
-
+	Shared *emulator;
 
 public:
 	void StartPineThread();
-	void OpenViewFinder();
 	void CloseViewFinder();
+	void OpenViewFinder();
+	void Run();
 };
 
