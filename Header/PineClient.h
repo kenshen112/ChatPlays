@@ -16,8 +16,17 @@ class PineClient
 {
 
 private:
+	std::map<const char*, void*> commands {
+		std::make_pair("ViewfinderOpen", &OpenViewFinder),
+		std::make_pair("ViewfinderClose", &CloseViewFinder)
+	};
+
+	PINE::PCSX2 pcsx2;
+
 
 public:
 	void StartPineThread();
+	void OpenViewFinder();
+	void CloseViewFinder();
 };
 
