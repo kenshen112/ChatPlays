@@ -11,6 +11,8 @@
 #include "Windows/control.h"
 #endif
 
+typedef void (*function)(void);
+
 using namespace PINE;
 
 // ToDo: Write your own implementation of PINE for whatever game or emulator software you're using
@@ -18,7 +20,7 @@ class PineClient
 {
 
 private:
-	std::map<const char*, void*> commands {
+	std::map<std::string, function> commands {
 		std::make_pair("ViewfinderOpen", &OpenViewFinder),
 		std::make_pair("ViewfinderClose", &CloseViewFinder)
 	};
@@ -29,6 +31,6 @@ public:
 	void StartPineThread();
 	void CloseViewFinder();
 	void OpenViewFinder();
-	void Run();
+	void Run(std::string command);
 };
 
