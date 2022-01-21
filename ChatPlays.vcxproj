@@ -127,7 +127,9 @@
   <ItemGroup>
     <ClInclude Include="3rdparty\json.hpp" />
     <ClInclude Include="3rdparty\pine.h" />
+    <ClInclude Include="Header\FatalData.h" />
     <ClInclude Include="Header\PineClient.h" />
+    <ClInclude Include="Header\PS2Math.h" />
     <ClInclude Include="header\settings.h" />
     <ClInclude Include="header\twitch.h" />
     <ClInclude Include="Header\Windows\control.h" />

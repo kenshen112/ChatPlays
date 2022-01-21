@@ -6,12 +6,14 @@
 #include "settings.h"
 #include "message.h"
 #include "twitch.h"
+#include "PineClient.h"
 
 static Message* queue;
 static std::vector<std::thread*> threadPool;
 
 static TwitchInfo twitchSettings;
 static Emit controller;
+static PineClient FatalFrame;
 
 void twitch()
 {
@@ -29,6 +31,7 @@ void startBot()
 {
     threadPool.push_back(new std::thread(&Twitch::StartTwitchThread, queue, &twitchSettings));
     threadPool.push_back(new std::thread(&Emit::ControllerThread, Emit(), queue, controller, false));
+    threadPool.push_back(new std::thread(&PineClient::StartPineThread, queue));
     threadPool[0]->join();
 }
 

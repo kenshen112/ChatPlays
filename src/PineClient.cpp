@@ -1,8 +1,19 @@
 #include "PineClient.h"
 
-void PineClient::StartPineThread()
+void PineClient::StartPineThread(Message* q)
+{
+	PineClient c;
+	c.init(q);
+}
+
+void PineClient::init(Message* q)
 {
 	emulator = new PCSX2(0);
+	active = true;
+	while (active)
+	{
+		Run(q->dequeue());
+	}
 }
 
 // ToDo. Write IPC implementation. I need to either find the value that sets these off. Or call the functions directly

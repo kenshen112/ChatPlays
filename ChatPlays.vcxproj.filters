@@ -67,5 +67,11 @@
     <ClInclude Include="3rdparty\pine.h">
       <Filter>3rdParty</Filter>
     </ClInclude>
+    <ClInclude Include="Header\FatalData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\PS2Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

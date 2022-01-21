@@ -132,7 +132,7 @@ public:
     {
         queue = q;
     }
-    Emit(json j, Message* q);
+    Emit(json j, Message* q, int heldFor = 0);
 
     // Note I make it include itself in the case of there's something real already.
     Emit* InitalConfig();
@@ -147,7 +147,7 @@ public:
     friend void from_json(const nlohmann::json& j, Emit& p);
 
     int CreateController(Message* q, Emit settings);
-    void emit(Message* q, Buttons cmd);
+    void emit(Message* q, Buttons cmd, int heldFor);
     void ControllerThread(Message* q, Emit settings, bool manual);
     void moveABS(axisData& axis);
     void resetABS();

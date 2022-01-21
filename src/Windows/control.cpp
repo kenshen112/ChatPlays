@@ -5,7 +5,7 @@
 #include <thread>
 #include <mutex>
 
-Emit::Emit(json j, Message* q)
+Emit::Emit(json j, Message* q, int heldFor)
 {
 	queue = q;
 	from_json(j, *this);
@@ -108,7 +108,7 @@ void Emit::ControllerThread(Message* q, Emit settings, bool manualControl)
 				isActive = false;
 			}
 			cmd = GetCommands(keyCode);
-			emit(q, cmd);
+			emit(q, cmd, 0);
 			report = new XUSB_REPORT();
 			Sleep(500);
 			resetABS();
@@ -125,7 +125,7 @@ void Emit::ControllerThread(Message* q, Emit settings, bool manualControl)
 				cmd = GetCommands(keyCode);
 				if (cmd != Buttons::CLEAR)
 				{
-					emit(q, cmd);
+					emit(q, cmd, 0);
 					report = new XUSB_REPORT();
 					Sleep(500);
 					resetABS();
@@ -174,7 +174,7 @@ int Emit::CreateController(Message* q, Emit settings)
 }
 // Reset will kill input! Input is never sent before reset is called
 // This needs to be a loop
-void Emit::emit(Message* q, Buttons cmd)
+void Emit::emit(Message* q, Buttons cmd, int heldFor)
 {
 	report = new XUSB_REPORT();
 	axisData axis;
@@ -211,6 +211,7 @@ void Emit::emit(Message* q, Buttons cmd)
 		moveABS(axis);
 	}
 	vigem_target_x360_update(driver, xbox, *report);
+	Sleep(heldFor);
 	cmd = Buttons::CLEAR;
 }
 
