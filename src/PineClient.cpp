@@ -34,9 +34,16 @@ void PineClient::CloseViewFinder()
 // Parse commands from thread in here and execute functions
 void PineClient::Run(std::string command)
 {
-	std::map<std::string, function>::iterator it = commands.find(command);
-	if (it != commands.end())
+
+	switch (state)
 	{
-		commands[command]();
+	case GameState::NORMAL:
+
+		break;
+
+	case GameState::BATTLE:
+		enemyHealth = emulator->Read<int>(00252e98);
+		std::cout << enemyHealth << std::endl;
+			break;
 	}
 }

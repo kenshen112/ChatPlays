@@ -15,6 +15,8 @@ typedef void (*function)(void);
 
 using namespace PINE;
 
+enum GameState {NORMAL, BATTLE};
+
 // ToDo: Write your own implementation of PINE for whatever game or emulator software you're using
 class PineClient
 {
@@ -29,8 +31,11 @@ private:
 
 	bool active;
 
-	int Night; // To check for possibly active ghosts!
-	int Hour; // To check for hour zero!
+	int enemyHealth; // 00252e98
+	int night; // To check for possibly active ghosts!
+	int missionHour; // To check for hour zero!
+
+	GameState state;
 
 	// cam_type
 
