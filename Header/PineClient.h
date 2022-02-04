@@ -27,8 +27,8 @@ private:
 		std::make_pair("ViewfinderClose", &CloseViewFinder)
 	};*/
 
+	Emit controller;
 	Shared *emulator;
-
 	bool active;
 
 	int enemyHealth; // 00252e98
@@ -43,6 +43,7 @@ public:
 	PineClient() = default;
 	static void StartPineThread(Message* q);
 	void init(Message* q);
+	void NewGame();
 	void CloseViewFinder();
 	void OpenViewFinder();
 	void Run(std::string command);

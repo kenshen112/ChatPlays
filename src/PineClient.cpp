@@ -1,4 +1,5 @@
 #include "PineClient.h"
+#include "PS2Math.h"
 
 void PineClient::StartPineThread(Message* q)
 {
@@ -14,6 +15,19 @@ void PineClient::init(Message* q)
 	{
 		Run(q->dequeue());
 	}
+}
+
+void PineClient::NewGame()
+{
+	// Note that this will just make the cursor go to the option
+	emulator->Write(0x00343077, 0);
+
+	// Press X on new game. This probably won't be the final logic in here.
+	controller.emit(nullptr ,Buttons::A, 0);
+
+	// To Do: initalize all bot data structres and zero it all out to start a fresh session.
+
+
 }
 
 // ToDo. Write IPC implementation. I need to either find the value that sets these off. Or call the functions directly
@@ -38,12 +52,17 @@ void PineClient::Run(std::string command)
 	switch (state)
 	{
 	case GameState::NORMAL:
-
+		if (command == "NewGame")
+		{
+		}
 		break;
 
 	case GameState::BATTLE:
 		enemyHealth = emulator->Read<int>(00252e98);
 		std::cout << enemyHealth << std::endl;
+		
+		// A stub to read enemies position for pathfinding later.
+		emulator->Read<Vector3>(0x00252ebc);
 			break;
 	}
 }

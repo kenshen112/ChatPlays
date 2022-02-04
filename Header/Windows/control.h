@@ -123,8 +123,9 @@ private:
     bool emitFail = false;
 
     Message* queue = nullptr;
-
     std::map<std::string, Buttons> commands;
+
+    static Emit *instance;
 
 public:
     Emit() = default;
@@ -134,6 +135,14 @@ public:
     }
     Emit(json j, Message* q, int heldFor = 0);
 
+    Emit* GetInstance()
+    {
+        if (instance == nullptr || instance != this)
+        {
+            instance = new Emit();
+        }
+        return instance;
+    }
     // Note I make it include itself in the case of there's something real already.
     Emit* InitalConfig();
     Buttons& GetCommands(std::string key);
@@ -151,6 +160,6 @@ public:
     void ControllerThread(Message* q, Emit settings, bool manual);
     void moveABS(axisData& axis);
     void resetABS();
-    void pressBtn(Buttons& btn);
-    void releaseBtn(Buttons& btn);
+    void pressBtn(Buttons btn);
+    void releaseBtn(Buttons btn);
 };

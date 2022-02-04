@@ -215,7 +215,7 @@ void Emit::emit(Message* q, Buttons cmd, int heldFor)
 	cmd = Buttons::CLEAR;
 }
 
-void Emit::pressBtn(Buttons& btn)
+void Emit::pressBtn(Buttons btn)
 {
 	if (report == nullptr)
 	{
@@ -224,7 +224,7 @@ void Emit::pressBtn(Buttons& btn)
 	report->wButtons |= buttonPos[btn];
 }
 
-void Emit::releaseBtn(Buttons& btn)
+void Emit::releaseBtn(Buttons btn)
 {
 	report->wButtons = 0; //&= ~(1 << buttonPos[btn]);
 }
