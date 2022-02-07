@@ -32,7 +32,7 @@ private:
 	bool active;
 
 	int enemyHealth; // 00252e98
-	int night; // To check for possibly active ghosts!
+	int hour; // To check for possibly active ghosts!
 	int missionHour; // To check for hour zero!
 
 	GameState state;

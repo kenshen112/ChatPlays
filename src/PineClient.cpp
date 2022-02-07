@@ -49,12 +49,34 @@ void PineClient::CloseViewFinder()
 void PineClient::Run(std::string command)
 {
 
+	// A global state.
+	if (emulator->Read<unsigned int>(0x00252a90) == 0x110)
+	{
+		// View Finder
+	}
+
 	switch (state)
 	{
 	case GameState::NORMAL:
 		if (command == "NewGame")
 		{
 		}
+
+		// Current hour or mission
+		hour = emulator->Read<int>(0x00252a74);
+
+		// Add hour logic
+		switch (hour)
+		{
+		case 0:
+			// Mafuyu
+			break;
+
+		default:
+			// Miku, unless we need specific logic outside of hours aside from Zero. Most of her logic can be handled in here.
+			break;
+		}
+
 		break;
 
 	case GameState::BATTLE:
