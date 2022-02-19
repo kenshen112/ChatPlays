@@ -111,6 +111,8 @@ public:
     }
 };
 
+// How can I mitigate timing issues with Xinput but allow button scripting?
+
 class Emit
 {
 private:
@@ -122,17 +124,13 @@ private:
     Buttons cmd = Buttons::CLEAR;
     bool emitFail = false;
 
-    Message* queue = nullptr;
-
-    std::map<std::string, Buttons> commands;
+    // Twitch or PINE should interpret the commands.
+    // The controller should have no concept that chat commands even exist they should just run.
+    //std::map<std::string, Buttons> commands;
 
 public:
     Emit() = default;
-    Emit(Message* q)
-    {
-        queue = q;
-    }
-    Emit(json j, Message* q);
+    Emit(json j);
 
     // Note I make it include itself in the case of there's something real already.
     Emit* InitalConfig();
@@ -142,13 +140,15 @@ public:
     bool isActive = false;
 
     json control;
+
+    // This is to save the commands that Twitch will type
     void save(json& j, bool isDefault = false);
     friend void to_json(nlohmann::json& j, const Emit& p);
     friend void from_json(const nlohmann::json& j, Emit& p);
 
-    int CreateController(Message* q, Emit settings);
-    void emit(Message* q, Buttons cmd);
-    void ControllerThread(Message* q, Emit settings, bool manual);
+    int CreateController(Emit settings);
+    void emit(Buttons cmd);
+    void ControllerThread(Emit settings, bool manual);
     void moveABS(axisData& axis);
     void resetABS();
     void pressBtn(Buttons& btn);

@@ -87,12 +87,13 @@ VOID CALLBACK notification(
 
 // Thread needs to switch to this function. Whoops!
 
-void Emit::ControllerThread(Message* q, Emit settings, bool manualControl)
+void Emit::ControllerThread(Emit settings, bool manualControl)
 {
 	std::string keyCode;
 	if (!isActive)
 	{
-		CreateController(q, settings);
+		// Probably not the best spot for this
+		CreateController(settings);
 	}
 	// Recieve commands from chat and press into emit
 	while (isActive)
@@ -108,7 +109,7 @@ void Emit::ControllerThread(Message* q, Emit settings, bool manualControl)
 				isActive = false;
 			}
 			cmd = GetCommands(keyCode);
-			emit(q, cmd);
+			emit(cmd);
 			report = new XUSB_REPORT();
 			Sleep(500);
 			resetABS();
@@ -116,31 +117,12 @@ void Emit::ControllerThread(Message* q, Emit settings, bool manualControl)
 			vigem_target_x360_update(driver, xbox, *report);
 
 		}
-		else if (manualControl == false)
-		{
-			std::string keyCode = queue->dequeue();
-			// It never seems to get past this.
-			if (keyCode != std::string())
-			{
-				cmd = GetCommands(keyCode);
-				if (cmd != Buttons::CLEAR)
-				{
-					emit(q, cmd);
-					report = new XUSB_REPORT();
-					Sleep(500);
-					resetABS();
-					releaseBtn(cmd);
-					vigem_target_x360_update(driver, xbox, *report);
-				}
-			}
-		}
 	}
 }
 
-int Emit::CreateController(Message* q, Emit settings)
+int Emit::CreateController(Emit settings)
 {
 	driver = vigem_alloc();
-	queue = q;
 	commands = std::move(settings.commands);
 	if (driver == nullptr)
 	{
@@ -172,9 +154,8 @@ int Emit::CreateController(Message* q, Emit settings)
 	}
 	return 0;
 }
-// Reset will kill input! Input is never sent before reset is called
-// This needs to be a loop
-void Emit::emit(Message* q, Buttons cmd)
+
+void Emit::emit(Buttons cmd)
 {
 	report = new XUSB_REPORT();
 	axisData axis;
