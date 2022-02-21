@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <filesystem>
 #include <Xinput.h>
-#include <ViGEm/Client.h>
+#include "ViGEm/Client.h"
 #include <iostream>
 #include <cstdint>
 #include <map>
@@ -111,8 +111,7 @@ public:
     }
 };
 
-// How can I mitigate timing issues with Xinput but allow button scripting?
-
+// This needs to be a thread safe blocking class!
 class Emit
 {
 private:
@@ -122,35 +121,25 @@ private:
     PVIGEM_TARGET xbox;
 
     Buttons cmd = Buttons::CLEAR;
-    bool emitFail = false;
-
-    // Twitch or PINE should interpret the commands.
-    // The controller should have no concept that chat commands even exist they should just run.
-    //std::map<std::string, Buttons> commands;
 
 public:
     Emit() = default;
     Emit(json j);
 
-    // Note I make it include itself in the case of there's something real already.
-    Emit* InitalConfig();
-    Buttons& GetCommands(std::string key);
-
     // All the action is in here m8
     bool isActive = false;
 
-    json control;
+    // This says hey! I have data bitch! Stop!
+    std::mutex m;
 
-    // This is to save the commands that Twitch will type
-    void save(json& j, bool isDefault = false);
-    friend void to_json(nlohmann::json& j, const Emit& p);
-    friend void from_json(const nlohmann::json& j, Emit& p);
+    int CreateController(bool manual);
 
-    int CreateController(Emit settings);
     void emit(Buttons cmd);
     void ControllerThread(Emit settings, bool manual);
+
     void moveABS(axisData& axis);
     void resetABS();
+
     void pressBtn(Buttons& btn);
     void releaseBtn(Buttons& btn);
 };

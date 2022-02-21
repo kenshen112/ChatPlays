@@ -66,9 +66,11 @@ void from_json(const nlohmann::json& j, TwitchInfo& p)
     j[0]["channelName"].get_to(p.channelName);
 }
 
-void Twitch::StartTwitchThread(Message* q, TwitchInfo* s)
+void Twitch::StartTwitchThread(Message* q, TwitchInfo* s, Emit* c)
 {
     Twitch t;
+    controller = new Emit();
+    controller = c;
     if (t.login(q, s))
     {
         t.update();
@@ -142,25 +144,41 @@ bool Twitch::update()
     {
         buffer += connection.recieve();
 
-        std::string com = connection.parseCommand(buffer);
-
-        if (buffer.find("PING :tmi.twitch.tv") != std::string::npos)
-        {
-            std::cout << "Pong: " << pong.c_str() << std::endl;
-            if (!connection.sendBytes(pong.c_str(), pong.size()))
-            {
-                std::cout << "Send Error" << std::endl;
-                return false;
-            }
-        }
-        if (buffer.find("PRIVMSG ") != std::string::npos)
-        {
-            queue->enque(com);
-        }
-
-        com.clear();
-        buffer.clear();
         std::flush(std::cout);
     }
     return true;
+}
+
+// If it's a command process it! Don't push it to global thread queue needlessly! Enqueue in the recognized twitch queue of commands and push to controller.
+
+bool Twitch::ParseCommand(std::string command)
+{
+    std::string com = connection.ParseCommand(buffer);
+
+    if (buffer.find("PING :tmi.twitch.tv") != std::string::npos)
+    {
+        std::cout << "Pong: " << pong.c_str() << std::endl;
+        if (!connection.sendBytes(pong.c_str(), pong.size()))
+        {
+            std::cout << "Send Error" << std::endl;
+            return false;
+        }
+    }
+
+    // Ideally, we'll have another method in the future to detect other twitch commands. 
+    // Think like it's a bot special command not directly related to the game in here
+    // ToDo. Add seperate non thread queue of commands to avoid spam and polling rate issues
+    else if (commands.find(com) != commands.end())
+    {
+         controller->emit(commands[com]);
+    }
+
+    // It's not a command that belongs to twitch. Ask PINE if it cares about it through the thread message queue
+    else
+    {
+        queue->enque(com);
+    }
+
+    com.clear();
+    buffer.clear();
 }

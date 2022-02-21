@@ -41,10 +41,12 @@ private:
     std::string pong = "PONG :tmi.twitch.tv\r\n";
 
     Connect connection;
-    Emit controller;
+    Emit *controller;
 
     Message* queue;
     TwitchInfo settings;
+
+    std::map<std::string, Buttons> commands;
 
     bool isJoined = false;
 public:
@@ -55,7 +57,9 @@ public:
     }
     bool login(Message* q, TwitchInfo* s);
 
-    static void StartTwitchThread(Message* q, TwitchInfo* s);
+    void StartTwitchThread(Message* q, TwitchInfo* s, Emit* c);
+
+    bool ParseCommand(std::string command);
 
     // bool open(std::string address); for other service integration like discord?
     // recieve commands from chat and parse

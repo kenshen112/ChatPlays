@@ -3,6 +3,10 @@
 #include <thread>
 #include <mutex>
 
+#include"imgui/imgui.h"
+
+#include "imgui/backends/imgui_impl_glfw.h"
+
 #include "settings.h"
 #include "message.h"
 #include "twitch.h"
@@ -11,24 +15,25 @@ static Message* queue;
 static std::vector<std::thread*> threadPool;
 
 static TwitchInfo twitchSettings;
-static Emit controller;
+Emit controller;
 
 void twitch()
 {
-    std::thread th(&Twitch::StartTwitchThread, queue, &twitchSettings);
+    std::thread th(&Twitch::StartTwitchThread, Twitch(), queue, &twitchSettings, &controller);
     th.join();
 }
 
 void manualControl()
 {
-    std::thread th(&Emit::ControllerThread, Emit(), controller, true);
-    th.join();
+    //std::thread th(&Emit::ControllerThread, Emit(), controller, true);
+    //th.join();
+    controller.CreateController(true);
 }
 
 void startBot()
 {
-    threadPool.push_back(new std::thread(&Twitch::StartTwitchThread, queue, &twitchSettings));
-    threadPool.push_back(new std::thread(&Emit::ControllerThread, Emit(), controller, false));
+    threadPool.push_back(new std::thread(&Twitch::StartTwitchThread, Twitch(), queue, &twitchSettings, &controller));
+    //threadPool.push_back(new std::thread(&Emit::ControllerThread, Emit(), controller, false));
     threadPool[0]->join();
 }
 

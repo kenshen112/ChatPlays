@@ -5,65 +5,6 @@
 #include <thread>
 #include <mutex>
 
-Emit::Emit(json j, Message* q)
-{
-	queue = q;
-	from_json(j, *this);
-}
-
-void Emit::save(json& j, bool isDefault)
-{
-	if (isDefault)
-	{
-		Emit e = Emit();
-		j += e.control;
-	}
-	else
-	{
-		control = *this;
-		j += control;
-	}
-}
-
-Emit* Emit::InitalConfig()
-{
-	std::string toEnter;
-	std::map<std::string, Buttons> tempBuffer;
-	
-	std::cout << "Please Enter commands for chat: " << std::endl;
-	std::cout << "Default will return default settings" << std::endl;
-
-	if (commands.size() > 0)
-	{
-		std::cout << "Quit will return to previous settings" << std::endl;
-
-		tempBuffer = std::move(commands);
-
-		if (toEnter == "Quit")
-		{
-			std::cout << "Quit Typed" << std::endl;
-			commands = std::move(tempBuffer);
-			return this;
-		}
-	}
-	for (int i = 0; i < commandEnumList.size(); i++)
-	{
-		std::cout << commandEnumList[i] << ": ";
-		std::cin >> toEnter;
-
-		if (toEnter == "Default")
-		{
-			std::cout << "Setting Commands to default" << std::endl;
-			commands = std::move(defaultCommands);
-			return this;
-		}
-		commands.emplace(toEnter, (Buttons)i);
-		toEnter.clear();
-	}
-
-	// Why is this returning null. What's not being initalized in the background correctly?
-	return this;
-}
 
 VOID CALLBACK notification(
 	PVIGEM_CLIENT Client,
@@ -93,12 +34,12 @@ void Emit::ControllerThread(Emit settings, bool manualControl)
 	if (!isActive)
 	{
 		// Probably not the best spot for this
-		CreateController(settings);
+		//CreateController(settings);
 	}
 	// Recieve commands from chat and press into emit
-	while (isActive)
+	if (manualControl)
 	{
-		if (manualControl)
+		while (isActive)
 		{
 			// I need a better way to poll this.
 			std::cout << "Enter a keycode: ";
@@ -108,7 +49,6 @@ void Emit::ControllerThread(Emit settings, bool manualControl)
 			{
 				isActive = false;
 			}
-			cmd = GetCommands(keyCode);
 			emit(cmd);
 			report = new XUSB_REPORT();
 			Sleep(500);
@@ -120,10 +60,9 @@ void Emit::ControllerThread(Emit settings, bool manualControl)
 	}
 }
 
-int Emit::CreateController(Emit settings)
+int Emit::CreateController(bool manualControl)
 {
 	driver = vigem_alloc();
-	commands = std::move(settings.commands);
 	if (driver == nullptr)
 	{
 		std::cerr << "Oops! Driver no allocate! Unga Bunga. Me confused!" << std::endl;
@@ -152,13 +91,41 @@ int Emit::CreateController(Emit settings)
 		vigem_target_x360_register_notification(driver, xbox, notification, nullptr);
 		isActive = true;
 	}
-	return 0;
+
+
+	// Recieve commands from chat and press into emit
+	if (manualControl)
+	{
+		std::string keyCode;
+		while (isActive)
+		{
+			// I need a better way to poll this.
+			std::cout << "Enter a keycode: ";
+			std::cin >> keyCode;
+
+			if (keyCode == "Exit")
+			{
+				isActive = false;
+			}
+			emit(cmd);
+			report = new XUSB_REPORT();
+			Sleep(500);
+			resetABS();
+			releaseBtn(cmd);
+			vigem_target_x360_update(driver, xbox, *report);
+		}
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 void Emit::emit(Buttons cmd)
 {
 	report = new XUSB_REPORT();
 	axisData axis;
+
 	switch (cmd)
 	{
 	case Buttons::UP:
@@ -177,12 +144,10 @@ void Emit::emit(Buttons cmd)
 	case Buttons::R2:
 		axis.set(0, 0, 0, 0, 30, 0);
 		break;
-
 	case Buttons::L2:
 		axis.set(0, 0, 0, 0, 0, 30);
 		break;
 	}
-
 	if (cmd > Buttons::R2)
 	{
 		pressBtn(cmd);
@@ -227,28 +192,4 @@ void Emit::resetABS()
 	report->sThumbRY = 0;
 	report->bRightTrigger = 0;
 	report->bLeftTrigger = 0;
-}
-
-Buttons& Emit::GetCommands(std::string key)
-{
-	Buttons c = CLEAR;
-	if (commands.find(key) != commands.end())
-	{
-		std::cout << "Command found" << std::endl;
-		return commands[key];
-	}
-	else
-	{
-		return c;
-	}
-}
-
-void from_json(const nlohmann::json& j, Emit& p)
-{
-	j[1]["commands"].get_to(p.commands);
-}
-
-void to_json(nlohmann::json& j, const Emit& p)
-{
-	j["commands"] = p.commands;
 }
