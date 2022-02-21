@@ -1,5 +1,7 @@
 Project(ChatPlays)
 cmake_minimum_required(VERSION 3.20.2)
+message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
+
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,8 +14,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON) # Without this flag CMake may resort to just
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty)
 
-
-if (UNIX)
+if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
     find_package(PkgConfig REQUIRED)
 
     include_directories(${CMAKE_SOURCE_DIR}/Header ${EVDEV_INCLUDE_DIRS})
@@ -23,13 +24,13 @@ if (UNIX)
     set (SOURCES src/Linux/control.cpp src/main.cpp src/twitch.cpp src/Linux/connect.cpp src/settings.cpp src/PineClient.cpp src/message.cpp)
 
     add_executable(ChatPlays ${SOURCES})
-    target_link_libraries(ChatPlays PRIVATE ${EVDEV_LIBRARIES} Threads::Threads ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/json.hpp)
-endif(UNIX)
+    target_link_libraries(ChatPlays PRIVATE ${EVDEV_LIBRARIES} Threads::Threads ThirdParty)
+endif()
 
-if (MSVC)
+if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
     set (SOURCES src/Windows/control.cpp src/main.cpp src/twitch.cpp src/Windows/winConnect.cpp src/settings.cpp src/PineClient.cpp src/message.cpp)
     add_executable(ChatPlays ${SOURCES})
     target_include_directories(ChatPlays PRIVATE ${CMAKE_SOURCE_DIR}/Header)
     target_link_libraries(ChatPlays PRIVATE Threads::Threads ViGEmClient ThirdParty ws2_32)
-endif(MSVC)
+endif()
 
