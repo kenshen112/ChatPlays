@@ -34,7 +34,7 @@ void Emit::ControllerThread(Emit settings, bool manualControl)
 	if (!isActive)
 	{
 		// Probably not the best spot for this
-		//CreateController(settings);
+		CreateController(true);
 	}
 	// Recieve commands from chat and press into emit
 	if (manualControl)

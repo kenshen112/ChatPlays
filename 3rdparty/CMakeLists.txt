@@ -11,8 +11,6 @@ set(GLFW_INSTALL        OFF CACHE BOOL "" FORCE)
 # when your main project gets installed.
 set(JSON_Install OFF CACHE INTERNAL "")
 
-find_package(OpenGL REQUIRED)
-
 if( MSVC )
     SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup" )
     add_subdirectory(windows/ViGEmClient)
@@ -38,4 +36,4 @@ target_include_directories(ThirdParty PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends
     )
 
-target_link_libraries(ThirdParty PUBLIC glfw OpenGL::GL)
+target_link_libraries(ThirdParty PUBLIC glfw)
