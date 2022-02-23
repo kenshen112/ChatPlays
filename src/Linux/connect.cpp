@@ -84,7 +84,7 @@ bool Connect::isConnected()
     return sock;
 }
 
-std::string Connect::parseCommand(std::string command)
+std::string Connect::ParseCommand(std::string command)
 {
     return strtok(command.data(), "!");
 }

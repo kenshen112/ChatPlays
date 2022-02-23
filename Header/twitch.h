@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdio.h>
 #ifdef __linux__ 
-#include "Linux/control.h"
+#include "Linux/EvDev.h"
 #include "Linux/connect.h"
 #elif _WIN32
 #include "Windows/winConnect.h"

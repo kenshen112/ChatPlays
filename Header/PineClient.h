@@ -6,7 +6,7 @@
 #include "twitch.h"
 
 #ifdef __linux__ 
-#include "Linux/control.h"
+#include "Linux/EvDev.h"
 #elif _WIN32
 #include "Windows/control.h"
 #endif

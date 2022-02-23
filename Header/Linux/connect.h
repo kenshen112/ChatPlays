@@ -47,7 +47,7 @@ class Connect
     }
     bool httpGet();
     bool httpPost();
-    std::string parseCommand(std::string s);
+    std::string ParseCommand(std::string s);
     bool isConnected();
     void disconnect();
 };

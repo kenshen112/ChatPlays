@@ -3,28 +3,7 @@
 #include <functional>
 #include <condition_variable>
 
-#include "Linux/control.h"
-
-Controller::Controller()
-{
-    fd = 0;
-    dev = nullptr;
-    driverVersion = 0;
-    uniqueID = std::string();
-    controllerName = std::string();
-}
-
-Controller::Controller(const Controller& c)
-{
-    fd = c.fd;
-    dev = c.dev;
-    abs = c.abs;
-    uniqueID = c.uniqueID;
-    eventPath = c.eventPath;
-    driverVersion = c.driverVersion;
-    mappedControls = c.mappedControls;
-    controllerName = c.controllerName;
-}
+#include "Linux/EvDev.h"
 
 Emit::Emit(json j)
 {
@@ -45,7 +24,7 @@ void Emit::save(json &j, bool isDefault)
     }
 }
 
-input_event Controller::pollEvent(pollfd* fds)
+input_event EvDevDevice::pollEvent(pollfd* fds)
 {
     int err = 0;
     input_event event;
@@ -129,10 +108,10 @@ void Emit::PrintControllers()
     }
 }
 
-Controller Emit::selectController()
+EvDevDevice Emit::selectController()
 {
     int j = 0;
-    Controller control;
+    EvDevDevice control;
 
     PrintControllers();
 
@@ -158,7 +137,7 @@ Controller Emit::selectController()
         if (err < 0)
         {
             std::cerr << "Err Generating evdev device" << std::endl;
-            return Controller();
+            return EvDevDevice();
         }
 
         control.driverVersion = libevdev_get_driver_version(control.dev);
@@ -172,7 +151,7 @@ Emit* Emit::InitalConfig()
 {
     pollfd fds[10];
     listControllers(fds);
-    controller = selectController();
+    //controller = selectController();
     bool isMapped = false;
 
     // Think about this for a second. There's a constant flow of data.
@@ -214,7 +193,18 @@ Emit* Emit::InitalConfig()
     return this;
 }
 
-bool Emit::CreateController(Message* q)
+void Emit::CreateController(bool manual)
+{
+    if (controller->AttachController())
+    {
+        if (manual)
+        {
+            // run manual control loop.
+        }
+    }
+}
+
+bool EvDevDevice::AttachController()
 {
     fd = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
     if (fd < 0)
@@ -224,8 +214,6 @@ bool Emit::CreateController(Message* q)
     }
     else
     {
-        queue = q;
-
         if (ioctl(fd, UI_SET_EVBIT, EV_ABS) < 0)
         {
             printf("IoCtrl EVBit Error\n");
@@ -234,22 +222,12 @@ bool Emit::CreateController(Message* q)
         {
             printf("IoCtrl EVBit Error\n");
         }
-        //int type = controller.buttonCodes[0];
-        for (int i = 0; i < controller.buttonCodes.size(); i++)
+        
+        for (int i = 0; i < buttonCodes.size(); i++)
         {
-            if (i < DRIGHT)
+            if (ioctl(fd, UI_SET_KEYBIT, buttonCodes[Buttons(i)]) < 0)
             {
-                if (ioctl(fd, UI_ABS_SETUP, &controller.abs[Buttons(i)], 0) < 0)
-                {
-                    printf("IoCtrl ABS Error\n");
-                }
-            }
-            else
-            {
-                if (ioctl(fd, UI_SET_KEYBIT, controller.buttonCodes[Buttons(i)]) < 0)
-                {
-                    printf("IoCtrl KEY Error\n");
-                }
+                printf("IoCtrl KEY Error\n");
             }
         }
         if (ioctl(fd, UI_DEV_CREATE) < 0)
@@ -263,170 +241,59 @@ bool Emit::CreateController(Message* q)
     return isActive;
 }
 
-void Emit::ControllerThread(Message* q, Emit settings, bool manual)
+void EvDevDevice::DisconnectController()
 {
-    if (!isActive)
-    {
-        CreateController(q);
-    }
-
-    while(isActive)
-    {
-        if (manual)
-        {
-            std::string cmd = std::string();
-            std::cout << "Please Enter a command: ";
-            std::cin >> cmd;
-            emit(q, GetCommands(cmd));
-        }
-        else if (!manual)
-        {
-            std::string cmd = q->dequeue();
-            emit(q, GetCommands(cmd));
-        }
-    }
+    libevdev_uinput_destroy(uidev);
+    libevdev_free(dev);
+    close(fd);
 }
 
-int Emit::pressBtn(uint32_t button)
+int EvDevDevice::PressButton(Buttons button)
 {
     int emitCode = 0;
 
-    emitCode = libevdev_uinput_write_event(uidev, EV_KEY, button, 1);
-    if (emitCode < 0)
-    {
-        std::cerr << "PRESS ERROR: " << strerror(errno) << std::endl;
-        return -1;
-    }
-
+    emitCode = libevdev_uinput_write_event(uidev, EV_KEY, buttonCodes[button], 1);
     emitCode = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
-    if (emitCode < 0)
-    {
-        std::cerr << "PRESS ERROR: " << strerror(errno) << std::endl;
-        return -1;
-    }
-
     sleep(1);
-    releaseBtn(button);
-
-    return emitCode;
+    ReleaseButton(button);
 }
 
-int Emit::releaseBtn(uint32_t button)
+int EvDevDevice::ReleaseButton(Buttons button)
 {
     int emitCode = 0;
 
     emitCode = libevdev_uinput_write_event(uidev, EV_KEY, button, 0);
-
-    if (emitCode < 0)
-    {
-        std::cerr << "PRESS ERROR: " << strerror(errno) << std::endl;
-        return -1;
-    }
-
     emitCode = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
-
-    if (emitCode < 0)
-    {
-        std::cerr << "PRESS ERROR: " << strerror(errno) << std::endl;
-        return -1;
-    }
-
     return emitCode;
 }
 
-int Emit::moveABS(uint32_t ABS, int moveAxis, int flat)
+void EvDevDevice::MoveABS(ABS abs, float moveAxis)
 {
     int emitCode = 0;
 
-    emitCode = libevdev_uinput_write_event(uidev, EV_ABS, ABS, moveAxis);
-
-    if (emitCode < 0)
-    {
-        std::cerr << "PRESS ERROR: " << strerror(errno) << std::endl;
-        return -1;
-    }
-
+    emitCode = libevdev_uinput_write_event(uidev, EV_ABS, abs, moveAxis);
     emitCode = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
-
-    if (emitCode < 0)
-    {
-        std::cerr << "PRESS ERROR: " << strerror(errno) << std::endl;
-        return -1;
-    }
 
     sleep(1);
-    resetABS(ABS, flat);
-    return emitCode;
+    ResetABS(abs);
 }
 
-int Emit::resetABS(uint32_t ABS, int flat)
+void EvDevDevice::ResetABS(ABS abs)
 {
     int emitCode = 0;
-    emitCode = libevdev_uinput_write_event(uidev, EV_ABS, ABS, flat);
-
-    if (emitCode < 0)
-    {
-        std::cerr << "PRESS ERROR: " << strerror(errno) << std::endl;
-        return -1;
-    }
-
+    emitCode = libevdev_uinput_write_event(uidev, EV_ABS, abs, 0);
     emitCode = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
-
-    if (emitCode < 0)
-    {
-        std::cerr << "PRESS ERROR: " << strerror(errno) << std::endl;
-        return -1;
-    }
-
-    return emitCode;
 }
 
-Buttons Emit::GetCommands(std::string key)
-{
-    if (commands.find(key) != commands.end())
-    {
-        std::cout << "Command found" << std::endl;
-        return commands[key];
-    }
-    else
-    {
-        return Buttons(-1);
-    }
-}
-
-bool Emit::emit(Message* q, Buttons keyCode)
+bool Emit::emit(Buttons keyCode)
 {
     int emitCode = 0;
-    switch(keyCode)
-    {
-    case Buttons::UP:
-        emitCode = moveABS(controller.buttonCodes[keyCode], controller.mappedControls[keyCode].value, 4095);
-        break;
-    case Buttons::DOWN:
-        // Dpad Down
-        emitCode = moveABS(controller.buttonCodes[keyCode], controller.mappedControls[keyCode].value, 4095);
-        break;
-    case Buttons::LEFT:
-        // Dpad Left
-        emitCode = moveABS(controller.buttonCodes[keyCode], controller.mappedControls[keyCode].value, 4095);
-        break;
-    case Buttons::RIGHT:
-        // Dpad Right
-        emitCode = moveABS(controller.buttonCodes[keyCode], controller.mappedControls[keyCode].value, 4095);
-        break;
-    case Buttons::EXIT: 
-        emitCode = Close();
-        return emitCode;
-        break;
-    }
-    emitCode = pressBtn(controller.buttonCodes[keyCode]);
     return emitCode;
 }
 
 bool Emit::Close()
 {
-    libevdev_uinput_destroy(uidev);
-    libevdev_free(controller.dev);
+    controller->DisconnectController();
     return 0;
 }
 
@@ -450,7 +317,7 @@ void from_json(const nlohmann::json& j, input_absinfo& abs)
     j["resolution"].get_to(abs.resolution);
 }
 
-void to_json(nlohmann::json& j, const Controller& c)
+void to_json(nlohmann::json& j, const EvDevDevice& c)
 {
     j[1]["abs"] = c.abs;
     j[1]["buttonCodes"] = c.buttonCodes;
@@ -458,7 +325,7 @@ void to_json(nlohmann::json& j, const Controller& c)
 
 }
 
-void from_json(const nlohmann::json& j, Controller& c)
+void from_json(const nlohmann::json& j, EvDevDevice& c)
 {
     j[1]["abs"].get_to(c.abs);
     j[1]["buttonCodes"].get_to(c.buttonCodes);
@@ -466,12 +333,10 @@ void from_json(const nlohmann::json& j, Controller& c)
 
 void to_json(nlohmann::json& j, const Emit& p)
 {
-    j[1]["commands"] = p.commands;
-    j[1]["controller"] = p.controller;
+    //j[1]["controller"] = p.controller;
 }
 
 void from_json(const nlohmann::json& j, Emit& p)
 {
-    j[1]["commands"].get_to(p.commands);
-    j[1]["controller"].get_to(p.controller);
+    //j[1]["controller"].get_to(p.controller);
 }

@@ -19,13 +19,13 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty)
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
     find_package(PkgConfig REQUIRED)
 
-    include_directories(${CMAKE_SOURCE_DIR}/Header ${EVDEV_INCLUDE_DIRS})
     link_directories(${CMAKE_SOURCE_DIR}/src ${EVDEV_LIBRARIES})
 
     pkg_search_module(EVDEV REQUIRED libevdev)
-    set (SOURCES src/Linux/control.cpp src/main.cpp src/twitch.cpp src/Linux/connect.cpp src/settings.cpp src/PineClient.cpp src/message.cpp src/Window.cpp)
+    set (SOURCES src/Linux/EvDev.cpp src/main.cpp src/twitch.cpp src/Linux/connect.cpp src/settings.cpp src/PineClient.cpp src/message.cpp src/Window.cpp)
 
     add_executable(ChatPlays ${SOURCES})
+    target_include_directories(ChatPlays PRIVATE ${CMAKE_SOURCE_DIR}/Header ${EVDEV_INCLUDE_DIRS})
     target_link_libraries(ChatPlays PRIVATE ${EVDEV_LIBRARIES} Threads::Threads ThirdParty OpenGL::GL)
 endif()
 
