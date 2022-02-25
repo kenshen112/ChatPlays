@@ -24,25 +24,33 @@ void Emit::save(json &j, bool isDefault)
     }
 }
 
-input_event EvDevDevice::pollEvent(pollfd* fds)
+bool EvDevDevice::pollEvent(uint32_t evType, uint32_t keycode)
 {
-    int err = 0;
-    input_event event;
+    int val = 0;
 
-    bool isReady = poll(fds, sizeof(fds), timer.tv_sec);
-
-    if (isReady)
+    if (libevdev_fetch_event_value(dev, evType, keycode, &val))
     {
-        err = read(fd, &event, sizeof(event));
-        // Means the struct was filled proper and we have an event
-        if (err == sizeof(event))
+        if (val == 1)
         {
-            return event;
+            std::cout << "Event 1" << std::endl;
+
+            if (libevdev_fetch_event_value(dev, evType, keycode, &val))
+            {
+                std::cout << " Code: " << libevdev_event_code_get_name(evType, keycode) << std::endl;
+                std::cout << "Value: " << val << std::endl;
+                if (val == 0)
+                {
+                    std::cout << "Event 2" << std::endl;
+                    return true;
+                }
+            }
+            return false;
         }
     }
+    return false;
 }
 
-void Emit::listControllers(pollfd* fds)
+void Emit::listControllers()
 {
     int i = 0;
     int file = 0;
@@ -79,7 +87,7 @@ void Emit::listControllers(pollfd* fds)
 
             if (libevdev_has_event_type(dev, EV_KEY) && libevdev_has_event_type(dev, EV_ABS))
             {
-                fds[i].fd = file;
+                fd = file;
                 // Since it's being closed anyways. Just tell it to fuck off ourselves. We can reopen in the lower config sections
                 close(file);
                 libevdev_free(dev);
@@ -108,10 +116,10 @@ void Emit::PrintControllers()
     }
 }
 
-EvDevDevice Emit::selectController()
+EvDevDevice* Emit::selectController()
 {
     int j = 0;
-    EvDevDevice control;
+    EvDevDevice* control = new EvDevDevice();
 
     PrintControllers();
 
@@ -122,74 +130,71 @@ EvDevDevice Emit::selectController()
         std::cout << "> ";
         std::cin >> j;
 
-        control.eventPath = controlSelect[j];
+        control->eventPath = controlSelect[j];
 
         // Start to create the actual controller device in here
-        control.fd = open(control.eventPath.c_str(), O_RDONLY);
+        control->fd = open(control->eventPath.c_str(), O_RDONLY);
 
-        if (control.fd < 0)
+        if (control->fd < 0)
         {
-            std::cerr << "Err: " << control.fd << std::endl;
+            std::cerr << "Err: " << control->fd << std::endl;
         }
 
-        int err = libevdev_new_from_fd(control.fd, &control.dev);
+        int err = libevdev_new_from_fd(control->fd, &control->dev);
 
         if (err < 0)
         {
             std::cerr << "Err Generating evdev device" << std::endl;
-            return EvDevDevice();
+            return nullptr;
         }
 
-        control.driverVersion = libevdev_get_driver_version(control.dev);
-        control.controllerName = libevdev_get_name(control.dev);
-        control.uniqueID = libevdev_get_uniq(control.dev);
+        control->driverVersion = libevdev_get_driver_version(control->dev);
+        control->controllerName = libevdev_get_name(control->dev);
+        //control->uniqueID = libevdev_get_uniq(control->dev);
     }
     return control;
 }
 
 Emit* Emit::InitalConfig()
 {
-    pollfd fds[10];
-    listControllers(fds);
-    //controller = selectController();
+    listControllers();
+    controller = selectController();
+
     bool isMapped = false;
+    int button = 0;
+    input_event* ev = new input_event();
 
     // Think about this for a second. There's a constant flow of data.
     // What do you actually NEED from that constant flow to be able to play back the controller when serialized.
-    // Cause this aint it dumbass.
 
-    /*for (int i = 0; i < controlNames.size(); i++)
+    for (int i = 0; i < buttonName.size(); i++)
     {
-        std::cout << " Configure: " << controlNames[(Buttons)i];
-        while(!isMapped)
+        std::cout << " Configure: " << buttonName[(Buttons)i] << std::endl;
+        isMapped = false;
+        while (!isMapped)
         {
-            controller.ev = controller.pollEvent(fds);
+            int ret = libevdev_next_event(controller->dev, LIBEVDEV_READ_FLAG_NORMAL, ev);
 
-            // This checks if were mapping to UP DOWN LEFT RIGHT etc.
-            if ((Buttons)i < Buttons::A && controller.ev.type == EV_ABS)
+            if (ret == LIBEVDEV_READ_STATUS_SYNC)
             {
-                input_absinfo absTemp;
-                ioctl(controller.fd, EVIOCGABS(controller.ev.code), absTemp);
+                ret = libevdev_next_event(controller->dev, LIBEVDEV_READ_FLAG_NORMAL | LIBEVDEV_READ_FLAG_SYNC, ev);
+            }
 
-                std::cout << " Code: " << libevdev_event_code_get_name(controller.ev.type, controller.ev.code) << std::endl;
-                controller.abs.try_emplace(controller.ev.code, absTemp);
-                controller.mappedControls.emplace((Buttons)i, controller.ev);
-                isMapped = true;
-            }
-            if ((Buttons)i >= Buttons::A && controller.ev.type == EV_KEY)
+            for (int j = 0; j < button_list.size(); j++)
             {
-                std::cout << " Code: " << libevdev_event_code_get_name(controller.ev.type, controller.ev.code) << std::endl;
-                controller.mappedControls.emplace((Buttons)i, controller.ev);
-                isMapped = true;
-            }
-            else
-            {
-                controller.ev = controller.pollEvent(fds);
+                isMapped = controller->pollEvent(EV_KEY, button_list[j]);
+                if (!isMapped)
+                    continue;
+
+                else if (isMapped == true)
+                {
+                    std::cout << " Code: " << libevdev_event_code_get_name(EV_KEY, button_list[j]) << std::endl;
+                    controller->mappedControls.emplace((Buttons)button, button_list[j]);
+                    break;
+                }
             }
         }
-        isMapped = false;
-    }*/
-
+    }
     return this;
 }
 
@@ -237,6 +242,8 @@ bool EvDevDevice::AttachController()
         }
         sleep(1);
         isActive = true;
+        // Count of attached players
+        //controllerID = ;
     }
     return isActive;
 }

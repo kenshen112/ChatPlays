@@ -34,8 +34,10 @@ void startBot()
 
 int main()
 {
-    queue = new Message();
-    Settings* settings = new Settings(controller, twitchSettings);
+    //queue = new Message();
+    //Settings* settings = new Settings(controller, twitchSettings);
+
+    controller.InitalConfig();
 
     Window* win = new Window();
 
