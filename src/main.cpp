@@ -21,12 +21,12 @@ void twitch()
     th.join();
 }
 
-void manualControl()
+void ManualControl()
 {
     controller.CreateController(true);
 }
 
-void startBot()
+void StartBot()
 {
     threadPool.push_back(new std::thread(&Twitch::StartTwitchThread, Twitch(), queue, &twitchSettings, &controller));
     threadPool[0]->join();
@@ -37,13 +37,18 @@ int main()
     //queue = new Message();
     //Settings* settings = new Settings(controller, twitchSettings);
 
-    controller.InitalConfig();
-
     Window* win = new Window();
-
+    win->StartFunc = StartBot;
+    win->ManualCtrl = ManualControl;
     if (win->CreateWindowGlContext("Main", 1920, 1080))
     {
         win->Update();
+
+        if (win->QuitFunc)
+        {
+            threadPool[0]->detach();
+            threadPool.clear();
+        }
     }
 
     return 0;

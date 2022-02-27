@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 
 #include "imgui/imgui.h"
@@ -6,24 +8,40 @@
 
 #include "GLFW/glfw3.h"
 
+#include "twitch.h"
+#ifdef __linux__
+    #include "Linux/EvDev.h"
+#elif _WIN32
+    #include "Windows/control.h"
+#endif
+
+typedef void (*func_ptr)(void);
+
 class Window
 {
-
 private:
-	GLFWwindow* window;
-	bool isActive = false;
+    GLFWwindow* window;
+    bool isActive = false;
+    bool showSettingsScreen;
 
 public:
-	Window() = default;
-	bool CreateWindowGlContext(std::string name, int sizeX, int sizeY);
-	void Update();
+    Window() = default;
+    bool CreateWindowGlContext(std::string name, int sizeX, int sizeY);
+    void Update();
 
-	inline ~Window()
-	{
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
-		glfwDestroyWindow(window);
-		glfwTerminate();
-	}
+    void DrawMainGUI();
+    void DrawSettings();
+
+    func_ptr StartFunc;
+    func_ptr ManualCtrl;
+    bool(*QuitFunc)(bool);
+
+    inline ~Window()
+    {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+        glfwDestroyWindow(window);
+        glfwTerminate();
+    }
 };

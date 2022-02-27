@@ -33,19 +33,10 @@ bool EvDevDevice::pollEvent(uint32_t evType, uint32_t keycode)
         if (val == 1)
         {
             std::cout << "Event 1" << std::endl;
-
-            if (libevdev_fetch_event_value(dev, evType, keycode, &val))
-            {
-                std::cout << " Code: " << libevdev_event_code_get_name(evType, keycode) << std::endl;
-                std::cout << "Value: " << val << std::endl;
-                if (val == 0)
-                {
-                    std::cout << "Event 2" << std::endl;
-                    return true;
-                }
-            }
-            return false;
+            return true;
         }
+
+        return false;
     }
     return false;
 }
@@ -97,6 +88,17 @@ void Emit::listControllers()
         i += 1;
     }
 }
+
+void Emit::DrawGui()
+{
+    if (!ImGui::Begin("Controller Configurator"))
+    {
+        ImGui::End();
+    }
+
+    ImGui::Text("Test");
+}
+
 
 void Emit::PrintControllers()
 {

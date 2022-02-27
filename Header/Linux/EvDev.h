@@ -1,13 +1,10 @@
 #pragma once
 #include <map>
 #include <mutex>
-#include <queue>
 #include <vector>
 #include <thread>
-#include <poll.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <unistd.h>
 #include <string.h>
 #include <iostream>
 #include <filesystem>
@@ -17,8 +14,8 @@
 #include <libevdev/libevdev-uinput.h>
 
 #include "json.hpp"
-#include "message.h"
 
+#include "Window.h"
 #include "Controller.h"
 
 using json = nlohmann::json;
@@ -245,8 +242,6 @@ class Emit
 
     EvDevDevice* controller;
 
-    std::queue<Buttons>controlQueue;
-
     std::vector<fs::path> controlSelect;
 
     public:
@@ -263,6 +258,7 @@ class Emit
     void CreateController(bool manual);
 
     void save(json &j, bool isDefault = false);
+    void DrawGui();
 
     friend void to_json(nlohmann::json& j, const Emit& p);
     friend void from_json(const nlohmann::json& j, Emit& p);

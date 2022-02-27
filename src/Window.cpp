@@ -13,7 +13,7 @@ bool Window::CreateWindowGlContext(std::string name, int sizeX, int sizeY)
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    GLFWwindow* window = glfwCreateWindow(sizeX, sizeY, name.c_str(), NULL, NULL);
+    window = glfwCreateWindow(sizeX, sizeY, name.c_str(), NULL, NULL);
 
     if (window == nullptr)
     {
@@ -36,6 +36,49 @@ bool Window::CreateWindowGlContext(std::string name, int sizeX, int sizeY)
     return isActive;
 }
 
+void Window::DrawMainGUI()
+{
+    ImGui::Begin("Main");
+    if (ImGui::Button("Settings"))
+    {
+        showSettingsScreen = true;
+    }
+
+    if (ImGui::Button("Control Manual"))
+    {
+        (*ManualCtrl)();
+    }
+    if (ImGui::Button("Start Bot"))
+    {
+        (*StartFunc)();
+    }
+    if (ImGui::Button("Exit"))
+    {
+        isActive = false;
+        // Use this to close threads
+        (*QuitFunc)(true);
+
+        return;
+    }
+    ImGui::End();
+}
+
+void Window::DrawSettings()
+{
+    ImGui::Begin("Settings");
+    // Show options for Twitch Or, Controller implementation
+    if (ImGui::Button("Twitch"))
+    {
+
+    }
+
+    if (ImGui::Button("Close"))
+    {
+        showSettingsScreen = false;
+    }
+    ImGui::End();
+}
+
 void Window::Update()
 {
 
@@ -49,10 +92,12 @@ void Window::Update()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        std::string test;
-        ImGui::Begin("Test Inputs");
+        DrawMainGUI();
 
-        ImGui::End();
+        if (showSettingsScreen)
+        {
+            DrawSettings();
+        }
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
