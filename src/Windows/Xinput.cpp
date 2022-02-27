@@ -68,7 +68,7 @@ bool Emit::SendInput(Buttons cmd, ABS a, float axis, int heldFor)
 	err = PressButton(cmd);
 	Sleep(heldFor);
 	err = ReleaseButton(cmd);
-	if (axis > 0)
+	if (a != ABS::CLEAR)
 	{
 		err = MoveABS(a, axis);
 		Sleep(heldFor);
@@ -134,4 +134,9 @@ int Emit::ResetABS(ABS abs)
 	report->bRightTrigger = 0;
 	report->bLeftTrigger = 0;
 	return vigem_target_x360_update(driver, xbox, *report);
+}
+
+void Emit::DisconnectController()
+{
+
 }

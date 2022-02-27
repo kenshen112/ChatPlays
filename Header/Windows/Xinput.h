@@ -5,14 +5,16 @@
 #include <mutex>
 #include <thread>
 #include <cstdint>
+#include <windows.h>
+
 #include <Xinput.h>
 #include <iostream>
-#include <windows.h>
 #include <filesystem>
 
 #include "json.hpp"
 #include "Controller.h"
 #include "ViGEm/Client.h"
+
 
 #pragma comment(lib, "setupapi.lib")
 
@@ -76,7 +78,7 @@ public:
 
     bool AttachController() override;
 
-    bool SendInput(Buttons cmd, ABS a, float axis = 0, int heldFor = 0) override;
+    bool SendInput(Buttons cmd, ABS a = ABS::CLEAR, float axis = 0, int heldFor = 0) override;
 
     int MoveABS(ABS abs, float axis) override;
     int ResetABS(ABS abs) override;

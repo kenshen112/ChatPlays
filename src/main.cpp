@@ -23,7 +23,8 @@ void twitch()
 
 void ManualControl()
 {
-    controller.CreateController(true);
+    controller.AttachController();
+    // Run manual input logic in here
 }
 
 void StartBot()
