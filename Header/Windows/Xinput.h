@@ -2,6 +2,8 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <map>
+#include <mutex>
+#include <thread>
 #include <cstdint>
 #include <Xinput.h>
 #include <iostream>

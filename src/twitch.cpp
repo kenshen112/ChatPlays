@@ -169,7 +169,7 @@ bool Twitch::ParseCommand(std::string command)
     // ToDo. Add seperate non thread queue of commands to avoid spam and polling rate issues
     else if (commands.find(com) != commands.end())
     {
-         controller->emit(commands[com]);
+         controller->SendInput(commands[com]);
     }
 
     // It's not a command that belongs to twitch. Ask PINE if it cares about it through the thread message queue
