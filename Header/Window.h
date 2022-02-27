@@ -12,7 +12,7 @@
 #ifdef __linux__
     #include "Linux/EvDev.h"
 #elif _WIN32
-    #include "Windows/control.h"
+    #include "Windows/Xinput.h"
 #endif
 
 typedef void (*func_ptr)(void);

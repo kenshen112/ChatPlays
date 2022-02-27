@@ -6,7 +6,7 @@
 #include "Linux/connect.h"
 #elif _WIN32
 #include "Windows/winConnect.h"
-#include "Windows/control.h"
+#include "Windows/Xinput.h"
 #endif
 
 #include "message.h"

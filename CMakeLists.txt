@@ -30,7 +30,7 @@ if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
-    set (SOURCES src/Windows/control.cpp src/main.cpp src/twitch.cpp src/Windows/winConnect.cpp src/settings.cpp src/PineClient.cpp src/message.cpp src/Window.cpp)
+    set (SOURCES src/Windows/Xinput.cpp src/main.cpp src/twitch.cpp src/Windows/winConnect.cpp src/settings.cpp src/PineClient.cpp src/message.cpp src/Window.cpp)
     add_executable(ChatPlays ${SOURCES})
     target_include_directories(ChatPlays PRIVATE ${CMAKE_SOURCE_DIR}/Header)
     target_link_libraries(ChatPlays PRIVATE Threads::Threads ViGEmClient ThirdParty ws2_32  OpenGL::GL)
