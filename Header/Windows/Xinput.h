@@ -33,28 +33,11 @@ static std::map<Buttons, uint16_t> buttonPos =
     {L1, XUSB_GAMEPAD_LEFT_SHOULDER},
     {R1, XUSB_GAMEPAD_RIGHT_SHOULDER},
     {L3, XUSB_GAMEPAD_LEFT_THUMB},
-    {R3, XUSB_GAMEPAD_RIGHT_THUMB}
-};
-
-struct axisData
-{
-private:
-    short axis[6];
-public:
-    void set(short x, short y, short rx, short ry, short r2, short l2)
-    {
-        axis[0] = x;
-        axis[1] = y;
-        axis[2] = rx;
-        axis[3] = ry;
-        axis[4] = r2;
-        axis[5] = l2;
-    }
-
-    short get(int i)
-    {
-        return axis[i];
-    }
+    {R3, XUSB_GAMEPAD_RIGHT_THUMB},
+    {DPAD_UP, XUSB_GAMEPAD_DPAD_UP},
+    {DPAD_DOWN, XUSB_GAMEPAD_DPAD_DOWN},
+    {DPAD_LEFT, XUSB_GAMEPAD_DPAD_LEFT},
+    {DPAD_RIGHT, XUSB_GAMEPAD_DPAD_RIGHT}
 };
 
 // This needs to be a thread safe blocking class!

@@ -26,7 +26,6 @@ VOID CALLBACK notification(
 	std::cout << (int)SmallMotor << std::endl;*/
 }
 
-
 bool Emit::AttachController()
 {
 	driver = vigem_alloc();
@@ -138,5 +137,6 @@ int Emit::ResetABS(ABS abs)
 
 void Emit::DisconnectController()
 {
-
+	vigem_target_x360_unregister_notification(xbox);
+	vigem_disconnect(driver);
 }

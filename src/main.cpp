@@ -24,7 +24,32 @@ void twitch()
 void ManualControl()
 {
     controller.AttachController();
-    // Run manual input logic in here
+    std::string com;
+    while (true)
+    {
+        std::cout << "Enter command: ";
+        std::cin >> com;
+
+        if (com == "A")
+        {
+            controller.SendInput(Buttons::A, ABS::CLEAR, 0, 100);
+        }
+
+        if (com == "B")
+        {
+            controller.SendInput(Buttons::B, ABS::CLEAR, 0, 100);
+        }
+
+        if (com == "Up")
+        {
+            controller.SendInput(Buttons::B_CLEAR, ABS::L_Y_AXIS, 32768, 100);
+        }
+
+        if (com == "Down")
+        {
+            controller.SendInput(Buttons::B_CLEAR, ABS::L_Y_AXIS, -32768, 100);
+        }
+    }
 }
 
 void StartBot()
