@@ -79,6 +79,27 @@ void Window::DrawSettings()
     ImGui::End();
 }
 
+void Window::DrawXinputSettings()
+{
+    ImGui::Begin("Controller Settings");
+    // Int selector for player amount. 
+    // Command inputs? Though I feel like that should belong to Twitch
+    ImGui::End();
+}
+
+void Window::DrawEvdevSettings()
+{
+    ImGui::Begin("Controller Settings");
+
+    ImGui::End();
+}
+
+void Window::DrawControllerTAS()
+{
+    ImGui::Begin("TAS");
+
+    ImGui::End();
+}
 void Window::Update()
 {
 

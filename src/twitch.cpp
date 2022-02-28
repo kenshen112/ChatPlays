@@ -164,20 +164,6 @@ bool Twitch::ParseCommand(std::string command)
         }
     }
 
-    // Ideally, we'll have another method in the future to detect other twitch commands. 
-    // Think like it's a bot special command not directly related to the game in here
-    // ToDo. Add seperate non thread queue of commands to avoid spam and polling rate issues
-    else if (commands.find(com) != commands.end())
-    {
-         controller->SendInput(commands[com]);
-    }
-
-    // It's not a command that belongs to twitch. Ask PINE if it cares about it through the thread message queue
-    else
-    {
-        queue->enque(com);
-    }
-
     com.clear();
     buffer.clear();
 }

@@ -49,6 +49,9 @@ private:
     PVIGEM_CLIENT driver;
     PVIGEM_TARGET xbox;
 
+    // A crew vs Z crew
+    int playerAmount;
+
 public:
     Emit() = default;
     Emit(json j);

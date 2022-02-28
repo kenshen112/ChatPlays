@@ -24,32 +24,7 @@ void twitch()
 void ManualControl()
 {
     controller.AttachController();
-    std::string com;
-    while (true)
-    {
-        std::cout << "Enter command: ";
-        std::cin >> com;
-
-        if (com == "A")
-        {
-            controller.SendInput(Buttons::A, ABS::CLEAR, 0, 100);
-        }
-
-        if (com == "B")
-        {
-            controller.SendInput(Buttons::B, ABS::CLEAR, 0, 100);
-        }
-
-        if (com == "Up")
-        {
-            controller.SendInput(Buttons::B_CLEAR, ABS::L_Y_AXIS, 32768, 100);
-        }
-
-        if (com == "Down")
-        {
-            controller.SendInput(Buttons::B_CLEAR, ABS::L_Y_AXIS, -32768, 100);
-        }
-    }
+    // Draw a GUI that let's buttons be pressed. A proto TAS gui so to speak
 }
 
 void StartBot()
@@ -68,12 +43,14 @@ int main()
     win->ManualCtrl = ManualControl;
     if (win->CreateWindowGlContext("Main", 1920, 1080))
     {
-        win->Update();
+        ImGui::ShowDemoWindow();
+        //win->Update();
 
         if (win->QuitFunc)
         {
             threadPool[0]->detach();
             threadPool.clear();
+            controller.DisconnectController();
         }
     }
 

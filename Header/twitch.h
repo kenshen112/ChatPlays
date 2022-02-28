@@ -46,8 +46,6 @@ private:
     Message* queue;
     TwitchInfo settings;
 
-    std::map<std::string, Buttons> commands;
-
     bool isJoined = false;
 public:
     Twitch() = default;
@@ -60,9 +58,6 @@ public:
     void StartTwitchThread(Message* q, TwitchInfo* s, Emit* c);
 
     bool ParseCommand(std::string command);
-
-    // bool open(std::string address); for other service integration like discord?
-    // recieve commands from chat and parse
 
     bool update();
     //void exit();

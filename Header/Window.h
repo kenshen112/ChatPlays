@@ -32,6 +32,10 @@ public:
     void DrawMainGUI();
     void DrawSettings();
 
+    void DrawXinputSettings();
+    void DrawEvdevSettings();
+    void DrawControllerTAS();
+
     func_ptr StartFunc;
     func_ptr ManualCtrl;
     bool(*QuitFunc)(bool);
