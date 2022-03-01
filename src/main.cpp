@@ -43,8 +43,7 @@ int main()
     win->ManualCtrl = ManualControl;
     if (win->CreateWindowGlContext("Main", 1920, 1080))
     {
-        ImGui::ShowDemoWindow();
-        //win->Update();
+        win->Update();
 
         if (win->QuitFunc)
         {

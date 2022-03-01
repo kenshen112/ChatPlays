@@ -73,4 +73,12 @@ public:
     int ReleaseButton(Buttons b) override;
 
     void DisconnectController() override;
+
+    inline void SetPlayerAmount(int i)
+    {
+        if (i > 0)
+        {
+            playerAmount = i;
+        }
+    }
 };

@@ -21,9 +21,21 @@ class Window
 {
 private:
     GLFWwindow* window;
-    bool isActive = false;
-    bool showSettingsScreen;
 
+    bool isActive = false;
+    
+    bool settingsScreen;
+    bool twitchSettings;
+    bool controllerSettings;
+    bool mainWindow;
+    bool tasWindow;
+    bool manualControlWindow;
+
+#ifdef _WIN32
+    Emit* controller;
+#elif __linux__
+    EvDev controller;
+#endif
 public:
     Window() = default;
     bool CreateWindowGlContext(std::string name, int sizeX, int sizeY);

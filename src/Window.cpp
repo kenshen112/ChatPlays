@@ -41,7 +41,7 @@ void Window::DrawMainGUI()
     ImGui::Begin("Main");
     if (ImGui::Button("Settings"))
     {
-        showSettingsScreen = true;
+        settingsScreen = true;
     }
 
     if (ImGui::Button("Control Manual"))
@@ -71,19 +71,32 @@ void Window::DrawSettings()
     {
 
     }
+    if (ImGui::Button("Controller Settings"))
+    {
+        controllerSettings = true;
+    }
 
     if (ImGui::Button("Close"))
     {
-        showSettingsScreen = false;
+        settingsScreen = false;
     }
     ImGui::End();
 }
 
 void Window::DrawXinputSettings()
 {
+    if (controller == nullptr)
+    {
+        controller = new Emit();
+    }
     ImGui::Begin("Controller Settings");
     // Int selector for player amount. 
     // Command inputs? Though I feel like that should belong to Twitch
+    int amount = 0;
+    if (ImGui::InputInt("Amount of players", &amount))
+    {
+        controller->SetPlayerAmount(amount);
+    }
     ImGui::End();
 }
 
@@ -115,9 +128,18 @@ void Window::Update()
 
         DrawMainGUI();
 
-        if (showSettingsScreen)
+        if (settingsScreen)
         {
             DrawSettings();
+        }
+
+        if (controllerSettings)
+        {
+#ifdef _WIN32
+            DrawXinputSettings();
+#elif __linux__
+            DrawEvdevSettings();
+#endif
         }
 
         ImGui::Render();
