@@ -34,7 +34,7 @@ private:
 #ifdef _WIN32
     Emit* controller;
 #elif __linux__
-    EvDev controller;
+    EvDevDevice* controller;
 #endif
 public:
     Window() = default;
@@ -47,6 +47,11 @@ public:
     void DrawXinputSettings();
     void DrawEvdevSettings();
     void DrawControllerTAS();
+
+    void Button(std::string name, func_ptr func);
+    void Button(std::string name, bool& toActivate);
+    void Slider(std::string name, int var, int min, int max);
+    void Slider(std::string name, float var, float min, float max);
 
     func_ptr StartFunc;
     func_ptr ManualCtrl;

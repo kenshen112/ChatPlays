@@ -24,9 +24,10 @@ namespace fs = std::filesystem;
 
 static std::map<ABS, std::string> absName
 {
-    {ABS::L_AXIS, "Left stick"},
-    {ABS::R_AXIS, "Right stick"},
-    {ABS::DPAD_AXIS, "Dpad"},
+    {ABS::L_X_AXIS, "Left stick X"},
+    {ABS::L_Y_AXIS, "Left stick Y"},
+    {ABS::R_X_AXIS, "Right stick X"},
+    {ABS::R_Y_AXIS, "Right stick Y"},
     {ABS::R2, "R2"},
     {ABS::L2, "L2"}
 };
@@ -219,9 +220,10 @@ struct EvDevDevice : Controller
     bool AttachController() override;
     int PressButton(Buttons b) override;
     int ReleaseButton(Buttons b) override;
-    void MoveABS(ABS abs, float axis) override;
-    void ResetABS(ABS abs) override;
+    int MoveABS(ABS abs, float axis) override;
+    int ResetABS(ABS abs) override;
     void DisconnectController() override;
+    bool SendInput(Buttons b, ABS a = ABS::CLEAR, float axis = 0, int heldFor = 0) override;
 
     bool pollEvent(uint32_t evType, uint32_t keyCode);
     std::map<Buttons, uint32_t> mappedControls;

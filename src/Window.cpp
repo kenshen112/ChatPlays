@@ -85,6 +85,7 @@ void Window::DrawSettings()
 
 void Window::DrawXinputSettings()
 {
+    #ifdef _WIN32
     if (controller == nullptr)
     {
         controller = new Emit();
@@ -98,6 +99,39 @@ void Window::DrawXinputSettings()
         controller->SetPlayerAmount(amount);
     }
     ImGui::End();
+    #endif
+}
+
+void Window::Button(std::string name, func_ptr func)
+{
+    if (ImGui::Button(name.data()))
+    {
+        (*func)();
+    }
+}
+
+void Window::Button(std::string name, bool& toActivate)
+{
+    if (ImGui::Button(name.data()))
+    {
+        toActivate = true;
+    }
+}
+
+void Window::Slider(std::string name, int var, int min, int max)
+{
+    if (ImGui::SliderInt(name.data(), &var, min, max))
+    {
+        //std::cerr << "Slider changed" << std::endl;
+    }
+}
+
+void Window::Slider(std::string name, float var, float min, float max)
+{
+    if (ImGui::SliderFloat(name.data(), &var, min, max))
+    {
+        //std::cerr << "Slider changed" << std::endl;
+    }
 }
 
 void Window::DrawEvdevSettings()

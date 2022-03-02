@@ -276,27 +276,31 @@ int EvDevDevice::ReleaseButton(Buttons button)
     return emitCode;
 }
 
-void EvDevDevice::MoveABS(ABS abs, float moveAxis)
+int EvDevDevice::MoveABS(ABS abs, float moveAxis)
 {
     int emitCode = 0;
 
     emitCode = libevdev_uinput_write_event(uidev, EV_ABS, abs, moveAxis);
     emitCode = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
-
-    sleep(1);
-    ResetABS(abs);
+    return emitCode;
 }
 
-void EvDevDevice::ResetABS(ABS abs)
+int EvDevDevice::ResetABS(ABS abs)
 {
     int emitCode = 0;
     emitCode = libevdev_uinput_write_event(uidev, EV_ABS, abs, 0);
     emitCode = libevdev_uinput_write_event(uidev, EV_SYN, SYN_REPORT, 0);
+    return emitCode;
 }
 
-bool Emit::emit(Buttons keyCode)
+bool EvDevDevice::SendInput(Buttons b, ABS a = ABS::CLEAR, float axis = 0, int heldFor = 0)
 {
     int emitCode = 0;
+    emitCode = PressButton(b);
+    sleep(heldFor);
+    emitCode = ReleaseButton(b);
+    emitCode = MoveABS(a, axis);
+    sleep(heldFor);
     return emitCode;
 }
 
