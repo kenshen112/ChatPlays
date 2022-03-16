@@ -8,12 +8,6 @@
 
 #include "GLFW/glfw3.h"
 
-#include "twitch.h"
-#ifdef __linux__
-    #include "Linux/EvDev.h"
-#elif _WIN32
-    #include "Windows/Xinput.h"
-#endif
 
 typedef void (*func_ptr)(void);
 
@@ -32,7 +26,7 @@ private:
     bool manualControlWindow;
 
 #ifdef _WIN32
-    Emit* controller;
+    //Xinput* controller;
 #elif __linux__
     EvDevDevice* controller;
 #endif
@@ -40,13 +34,6 @@ public:
     Window() = default;
     bool CreateWindowGlContext(std::string name, int sizeX, int sizeY);
     void Update();
-
-    void DrawMainGUI();
-    void DrawSettings();
-
-    void DrawXinputSettings();
-    void DrawEvdevSettings();
-    void DrawControllerTAS();
 
     void Button(std::string name, func_ptr func);
     void Button(std::string name, bool& toActivate);

@@ -40,13 +40,50 @@ bool Settings::Save()
      return true;
 }
 
+void Settings::SetUser(std::string& str)
+{
+    if (!str.empty() && twitch->userName != str)
+        twitch->userName = str;
+}
+
+void Settings::SetOauth(std::string& oauth)
+{
+    if (!oauth.empty() && twitch->oauthToken != oauth)
+        twitch->oauthToken = oauth;
+}
+
+void Settings::SetChannel(std::string& channel)
+{
+    if (!channel.empty() && twitch->channelName != channel)
+        twitch->channelName = channel;
+}
+
+void to_json(json& j, const TwitchInfo& p)
+{
+    j = nlohmann::json
+    {
+        {"userName", p.userName},
+        {"oauthToken", p.oauthToken},
+        {"channelName", p.channelName}
+    };
+}
+
+void from_json(const nlohmann::json& j, TwitchInfo& p)
+{
+    j[0]["userName"].get_to(p.userName);
+    j[0]["oauthToken"].get_to(p.oauthToken);
+    j[0]["channelName"].get_to(p.channelName);
+}
+
 // Could be printing settings. Or, writing the file
-std::ostream& operator<<(std::ostream &out, const Settings &c)
+/*std::ostream& operator << (std::ostream& out, const Settings& c)
 {
 
+    return *this;
 }
 
-std::ifstream& operator>>(std::istream &in, Settings &c)
+std::istream& operator >> (std::istream& in, Settings& c)
 {
 
-}
+    return *this;
+}*/

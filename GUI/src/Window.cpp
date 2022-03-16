@@ -36,72 +36,6 @@ bool Window::CreateWindowGlContext(std::string name, int sizeX, int sizeY)
     return isActive;
 }
 
-void Window::DrawMainGUI()
-{
-    ImGui::Begin("Main");
-    if (ImGui::Button("Settings"))
-    {
-        settingsScreen = true;
-    }
-
-    if (ImGui::Button("Control Manual"))
-    {
-        (*ManualCtrl)();
-    }
-    if (ImGui::Button("Start Bot"))
-    {
-        (*StartFunc)();
-    }
-    if (ImGui::Button("Exit"))
-    {
-        isActive = false;
-        // Use this to close threads
-        (*QuitFunc)(true);
-
-        return;
-    }
-    ImGui::End();
-}
-
-void Window::DrawSettings()
-{
-    ImGui::Begin("Settings");
-    // Show options for Twitch Or, Controller implementation
-    if (ImGui::Button("Twitch"))
-    {
-
-    }
-    if (ImGui::Button("Controller Settings"))
-    {
-        controllerSettings = true;
-    }
-
-    if (ImGui::Button("Close"))
-    {
-        settingsScreen = false;
-    }
-    ImGui::End();
-}
-
-void Window::DrawXinputSettings()
-{
-    #ifdef _WIN32
-    if (controller == nullptr)
-    {
-        controller = new Emit();
-    }
-    ImGui::Begin("Controller Settings");
-    // Int selector for player amount. 
-    // Command inputs? Though I feel like that should belong to Twitch
-    int amount = 0;
-    if (ImGui::InputInt("Amount of players", &amount))
-    {
-        controller->SetPlayerAmount(amount);
-    }
-    ImGui::End();
-    #endif
-}
-
 void Window::Button(std::string name, func_ptr func)
 {
     if (ImGui::Button(name.data()))
@@ -134,19 +68,6 @@ void Window::Slider(std::string name, float var, float min, float max)
     }
 }
 
-void Window::DrawEvdevSettings()
-{
-    ImGui::Begin("Controller Settings");
-
-    ImGui::End();
-}
-
-void Window::DrawControllerTAS()
-{
-    ImGui::Begin("TAS");
-
-    ImGui::End();
-}
 void Window::Update()
 {
 
@@ -159,22 +80,6 @@ void Window::Update()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        DrawMainGUI();
-
-        if (settingsScreen)
-        {
-            DrawSettings();
-        }
-
-        if (controllerSettings)
-        {
-#ifdef _WIN32
-            DrawXinputSettings();
-#elif __linux__
-            DrawEvdevSettings();
-#endif
-        }
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -10,7 +10,6 @@
 #endif
 
 #include "message.h"
-#include "json.hpp"
 
 using json = nlohmann::json;
 
@@ -20,17 +19,7 @@ struct TwitchInfo
     std::string oauthToken;
     std::string channelName;
 
-    json twitch;
-
     TwitchInfo();
-    TwitchInfo(nlohmann::json& j);
-
-    TwitchInfo* InitalConfig();
-    void Save(nlohmann::json& j, bool isDefault = false);
-    void Load(nlohmann::json& j);
-
-    friend void to_json(nlohmann::json& j, const TwitchInfo& p);
-    friend void from_json(const nlohmann::json& j, TwitchInfo& p);
 };
 
 class Twitch
