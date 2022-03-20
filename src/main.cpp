@@ -3,17 +3,15 @@
 #include <thread>
 #include <mutex>
 
-#include "settings.h"
 #include "message.h"
 #include "twitch.h"
-
-#include "Window.h"
+#include "Controller.h"
 
 static Message* queue;
 static std::vector<std::thread*> threadPool;
 
 static TwitchInfo twitchSettings;
-Emit controller;
+Controller *controller;
 
 void twitch()
 {
@@ -23,7 +21,7 @@ void twitch()
 
 void ManualControl()
 {
-    controller.AttachController();
+    controller->AttachController();
     // Draw a GUI that let's buttons be pressed. A proto TAS gui so to speak
 }
 
@@ -38,8 +36,7 @@ int main()
     //queue = new Message();
     //Settings* settings = new Settings(controller, twitchSettings);
 
-    Window* win = new Window();
-    win->StartFunc = StartBot;
+    /*win->StartFunc = StartBot;
     win->ManualCtrl = ManualControl;
     if (win->CreateWindowGlContext("Main", 1920, 1080))
     {
@@ -51,7 +48,7 @@ int main()
             threadPool.clear();
             controller.DisconnectController();
         }
-    }
+    }*/
 
     return 0;
 }

@@ -15,7 +15,6 @@
 
 #include "json.hpp"
 
-#include "Window.h"
 #include "Controller.h"
 
 using json = nlohmann::json;

@@ -25,11 +25,6 @@ private:
     bool tasWindow;
     bool manualControlWindow;
 
-#ifdef _WIN32
-    //Xinput* controller;
-#elif __linux__
-    EvDevDevice* controller;
-#endif
 public:
     Window() = default;
     bool CreateWindowGlContext(std::string name, int sizeX, int sizeY);
