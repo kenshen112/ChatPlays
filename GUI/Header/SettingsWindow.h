@@ -12,9 +12,11 @@ private:
     Window window;
     //Settings settings;
 
-
     bool TwitchWindow;
     bool ControllerWindow;
+
+    void XinputSettings();
+    void EvdevSettings();
 public:
 
     void DrawMainSettings();

@@ -13,6 +13,20 @@ void MainWindow::Open()
     ImGui::End();
 }
 
+void MainWindow::DrawTwitch()
+{
+    ImGui::Begin("Twitch");
+    // Something about connection stats and chatroom
+    ImGui::End();
+}
+
+void MainWindow::DrawPine()
+{
+    ImGui::Begin("Pine");
+    // Stats about Pine and game running
+    ImGui::End();
+}
+
 
 void MainWindow::Update()
 {
