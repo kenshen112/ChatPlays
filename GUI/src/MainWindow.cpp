@@ -4,29 +4,33 @@
 void MainWindow::Open()
 {
     window = new Window();
-    window->CreateWindowGlContext("ChatPlays", 1920, 1080);
+    if (window->CreateWindowGlContext("ChatPlays", 1920, 1080))
+    {
 
-    ImGui::Begin("Main");
-    window->Button("Twitch", twitch);
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        (void)io;
 
-    window->Button("Settings", settings);
-    ImGui::End();
+        ImGui_ImplGlfw_InitForOpenGL(window->GetWindow(), true);
+        ImGui_ImplOpenGL3_Init("#version 130");
+        ImGui::StyleColorsDark();
+
+        ImGui::NewFrame();
+
+        if (window->CreateWindow("Main Window", &isOpen))
+        {
+            //window->Button("Twitch", tWindow->Open());
+
+        }
+
+        ImGui::EndFrame();
+    }
 }
 
-void MainWindow::DrawTwitch()
+void MainWindow::Close()
 {
-    ImGui::Begin("Twitch");
-    // Something about connection stats and chatroom
-    ImGui::End();
-}
 
-void MainWindow::DrawPine()
-{
-    ImGui::Begin("Pine");
-    // Stats about Pine and game running
-    ImGui::End();
 }
-
 
 void MainWindow::Update()
 {

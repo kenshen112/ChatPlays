@@ -3,9 +3,12 @@
 #include <thread>
 #include <mutex>
 
-#include "message.h"
 #include "twitch.h"
+#include "message.h"
 #include "Controller.h"
+#include "MainWindow.h"
+#include "SettingsWindow.h"
+
 
 static Message* queue;
 static std::vector<std::thread*> threadPool;
@@ -15,7 +18,7 @@ Controller *controller;
 
 void twitch()
 {
-    std::thread th(&Twitch::StartTwitchThread, Twitch(), queue, &twitchSettings, &controller);
+    std::thread th(&Twitch::StartTwitchThread, Twitch(), queue, &twitchSettings);
     th.join();
 }
 
@@ -27,28 +30,41 @@ void ManualControl()
 
 void StartBot()
 {
-    threadPool.push_back(new std::thread(&Twitch::StartTwitchThread, Twitch(), queue, &twitchSettings, &controller));
+    threadPool.push_back(new std::thread(&Twitch::StartTwitchThread, Twitch(), queue, &twitchSettings));
     threadPool[0]->join();
 }
 
 int main()
 {
-    //queue = new Message();
-    //Settings* settings = new Settings(controller, twitchSettings);
+    queue = new Message();
 
-    /*win->StartFunc = StartBot;
-    win->ManualCtrl = ManualControl;
-    if (win->CreateWindowGlContext("Main", 1920, 1080))
+    SettingsWindow* s;
+    MainWindow* window;
+
+    char command;
+
+    std::cout << "Options: "
+    << "S: Settings Window"
+    << "T: Twitch Window"
+    << "C: Controller Window"
+    << std::endl;
+
+    std::cout << "> ";
+    std::cin >> command;
+
+    switch(std::toupper(command))
     {
-        win->Update();
+        case 'S':
+            s = new SettingsWindow();
+            s->DrawMainSettings();
+            break;
 
-        if (win->QuitFunc)
-        {
-            threadPool[0]->detach();
-            threadPool.clear();
-            controller.DisconnectController();
-        }
-    }*/
+        case 'T':
+            break;
+
+        case 'C':
+            break;
+    }
 
     return 0;
 }

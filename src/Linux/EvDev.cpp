@@ -89,17 +89,6 @@ void Emit::listControllers()
     }
 }
 
-void Emit::DrawGui()
-{
-    if (!ImGui::Begin("Controller Configurator"))
-    {
-        ImGui::End();
-    }
-
-    ImGui::Text("Test");
-}
-
-
 void Emit::PrintControllers()
 {
     int i = 0;
@@ -293,7 +282,7 @@ int EvDevDevice::ResetABS(ABS abs)
     return emitCode;
 }
 
-bool EvDevDevice::SendInput(Buttons b, ABS a = ABS::CLEAR, float axis = 0, int heldFor = 0)
+bool EvDevDevice::SendInput(Buttons b, ABS a, float axis, int heldFor)
 {
     int emitCode = 0;
     emitCode = PressButton(b);

@@ -1,22 +1,19 @@
+#pragma once
 #include <iostream>
 #include "Window.h"
 #include "SettingsWindow.h"
+#include "TwitchWindow.h"
 
 class MainWindow
 {
     private:
+    bool isOpen;
     Window* window;
     SettingsWindow* sWindow;
-
-    bool twitch;
-    bool settings;
-
+    TwitchWindow* tWindow;
     public:
+
     void Open();
-    void DrawMainWindow();
-    // This would be best for an OSD? Or, would this be better for the bot UI. This would be either debug info and chat/
-    // Or, this would be the hijacked OSD context
-    void DrawTwitch();
-    void DrawPine();
+    void Close();
     void Update();
 };

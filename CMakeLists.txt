@@ -25,14 +25,14 @@ if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
     set (SOURCES src/Linux/EvDev.cpp src/main.cpp src/twitch.cpp src/Linux/connect.cpp src/PineClient.cpp src/message.cpp)
 
     add_executable(ChatPlays ${SOURCES})
-    target_include_directories(ChatPlays PRIVATE ${CMAKE_SOURCE_DIR}/Header ${EVDEV_INCLUDE_DIRS})
-    target_link_libraries(ChatPlays PRIVATE ${EVDEV_LIBRARIES} Threads::Threads ThirdParty OpenGL::GL UI)
+    target_include_directories(ChatPlays PUBLIC ${CMAKE_SOURCE_DIR}/Header ${EVDEV_INCLUDE_DIRS})
+    target_link_libraries(ChatPlays PUBLIC ${EVDEV_LIBRARIES} Threads::Threads ThirdParty OpenGL::GL UI)
 endif()
 
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
     set (SOURCES src/Windows/Xinput.cpp src/main.cpp src/twitch.cpp src/Windows/winConnect.cpp src/PineClient.cpp src/message.cpp)
     add_executable(ChatPlays ${SOURCES})
-    target_include_directories(ChatPlays PRIVATE ${CMAKE_SOURCE_DIR}/Header)
-    target_link_libraries(ChatPlays PRIVATE Threads::Threads ViGEmClient ws2_32 OpenGL::GL UI)
+    target_include_directories(ChatPlays PUBLIC ${CMAKE_SOURCE_DIR}/Header)
+    target_link_libraries(ChatPlays PUBLIC Threads::Threads ViGEmClient ws2_32 OpenGL::GL UI)
 endif()
 

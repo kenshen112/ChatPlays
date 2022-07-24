@@ -25,46 +25,14 @@ bool Window::CreateWindowGlContext(std::string name, int sizeX, int sizeY)
 
     IMGUI_CHECKVERSION();
 
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    (void)io;
-
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 130");
-    ImGui::StyleColorsDark();
-
     return isActive;
 }
 
-void Window::Button(std::string name, func_ptr func)
+void Window::Open(std::string title)
 {
-    if (ImGui::Button(name.data()))
+    if (ImGui::Begin(title.data()))
     {
-        (*func)();
-    }
-}
-
-void Window::Button(std::string name, bool& toActivate)
-{
-    if (ImGui::Button(name.data()))
-    {
-        toActivate = true;
-    }
-}
-
-void Window::Slider(std::string name, int var, int min, int max)
-{
-    if (ImGui::SliderInt(name.data(), &var, min, max))
-    {
-        //std::cerr << "Slider changed" << std::endl;
-    }
-}
-
-void Window::Slider(std::string name, float var, float min, float max)
-{
-    if (ImGui::SliderFloat(name.data(), &var, min, max))
-    {
-        //std::cerr << "Slider changed" << std::endl;
+        ImGui::End();
     }
 }
 

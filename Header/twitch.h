@@ -2,12 +2,12 @@
 #include <iostream>
 #include <stdio.h>
 #ifdef __linux__ 
-#include "Linux/EvDev.h"
 #include "Linux/connect.h"
 #elif _WIN32
 #include "Windows/winConnect.h"
-#include "Windows/Xinput.h"
 #endif
+
+#include "settings.h"
 
 #include "message.h"
 
@@ -19,7 +19,8 @@ struct TwitchInfo
     std::string oauthToken;
     std::string channelName;
 
-    TwitchInfo();
+    TwitchInfo() = default;
+    TwitchInfo(TwitchInfoSettings);
 };
 
 class Twitch
@@ -30,7 +31,6 @@ private:
     std::string pong = "PONG :tmi.twitch.tv\r\n";
 
     Connect connection;
-    Emit *controller;
 
     Message* queue;
     TwitchInfo settings;
@@ -44,11 +44,10 @@ public:
     }
     bool login(Message* q, TwitchInfo* s);
 
-    void StartTwitchThread(Message* q, TwitchInfo* s, Emit* c);
+    void StartTwitchThread(Message* q, TwitchInfo* s);
 
     bool ParseCommand(std::string command);
 
     bool update();
     //void exit();
-
 };

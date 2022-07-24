@@ -15,29 +15,21 @@ class Window
 {
 private:
     GLFWwindow* window;
-
     bool isActive = false;
-    
-    bool settingsScreen;
-    bool twitchSettings;
-    bool controllerSettings;
-    bool mainWindow;
-    bool tasWindow;
-    bool manualControlWindow;
-
 public:
     Window() = default;
     bool CreateWindowGlContext(std::string name, int sizeX, int sizeY);
     void Update();
 
-    void Button(std::string name, func_ptr func);
-    void Button(std::string name, bool& toActivate);
-    void Slider(std::string name, int var, int min, int max);
-    void Slider(std::string name, float var, float min, float max);
+    inline GLFWwindow* GetWindow()
+    {
+        return window;
+    }
 
-    func_ptr StartFunc;
-    func_ptr ManualCtrl;
     bool(*QuitFunc)(bool);
+
+
+    virtual void Open(std::string title);
 
     inline ~Window()
     {

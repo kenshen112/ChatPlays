@@ -58,7 +58,7 @@ void Settings::SetChannel(std::string& channel)
         twitch->channelName = channel;
 }
 
-void to_json(json& j, const TwitchInfo& p)
+void to_json(json& j, const TwitchInfoSettings& p)
 {
     j = nlohmann::json
     {
@@ -68,7 +68,7 @@ void to_json(json& j, const TwitchInfo& p)
     };
 }
 
-void from_json(const nlohmann::json& j, TwitchInfo& p)
+void from_json(const nlohmann::json& j, TwitchInfoSettings& p)
 {
     j[0]["userName"].get_to(p.userName);
     j[0]["oauthToken"].get_to(p.oauthToken);

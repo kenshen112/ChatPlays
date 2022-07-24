@@ -11,15 +11,15 @@
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
-struct TwitchInfo
+struct TwitchInfoSettings
 {
     std::string userName;
     std::string oauthToken;
     std::string channelName;
 
 
-    friend void to_json(nlohmann::json& j, const TwitchInfo& p);
-    friend void from_json(const nlohmann::json& j, TwitchInfo& p);
+    friend void to_json(nlohmann::json& j, const TwitchInfoSettings& p);
+    friend void from_json(const nlohmann::json& j, TwitchInfoSettings& p);
 };
 
 struct Xinput
@@ -45,7 +45,7 @@ class Settings
     std::fstream file;
     json j;
 
-    TwitchInfo* twitch;
+    TwitchInfoSettings* twitch;
 
     public:
     Settings() = default;
@@ -57,7 +57,7 @@ class Settings
     void SetOauth(std::string& str);
     void SetChannel(std::string& str);
 
-    TwitchInfo* GetTwitch()
+    TwitchInfoSettings* GetTwitch()
     {
         if (twitch != nullptr)
             return twitch;

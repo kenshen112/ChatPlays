@@ -1,11 +1,9 @@
 #include "twitch.h"
 #include <errno.h>
 
-void Twitch::StartTwitchThread(Message* q, TwitchInfo* s, Emit* c)
+void Twitch::StartTwitchThread(Message* q, TwitchInfo* s)
 {
     Twitch t;
-    controller = new Emit();
-    controller = c;
     if (t.login(q, s))
     {
         t.update();
